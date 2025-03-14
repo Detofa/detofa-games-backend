@@ -1,0 +1,9 @@
+# dependencies
+/node_modules
+node_modules/
+
+# local env files
+.env
+.env.*
+
+# https://swagger.io/solutions/api-documentation/

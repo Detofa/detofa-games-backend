@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('USER', 'ADMIN', 'STAFF', 'FILEDTEAM', 'SNAKEADMIN', 'TETRISADMIN', 'FLAPPYBIRDADMIN');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "status" "UserStatus" NOT NULL DEFAULT 'USER';

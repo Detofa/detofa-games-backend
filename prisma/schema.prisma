@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Game {
+  SNAKE
+  FLAPPY_BIRD
+  TETRIS
+}
+
+enum ScoreType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum UserStatus {
+  USER
+  ADMIN
+  STAFF
+  FILEDTEAM
+  SNAKEADMIN
+  TETRISADMIN
+  FLAPPYBIRDADMIN
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String
+  password  String?
+  name      String?
+  phone     String?    @unique
+  country   String?
+  city      String?
+  imageUrl  String?
+  gender    Gender?
+  status    UserStatus @default(USER)
+  scores    Score[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Score {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  game      Game
+  score     Int
+  type      ScoreType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, game, type, createdAt])
+}
