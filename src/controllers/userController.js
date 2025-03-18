@@ -12,9 +12,15 @@ export async function register(req, res) {
 
   try {
     const prismaGender =
-      gender === "Homme" || gender === "Male"
+      gender === "Homme" ||
+      gender === "Male" ||
+      gender === "homme" ||
+      gender === "male"
         ? "MALE"
-        : gender === "Femme" || gender === "Female"
+        : gender === "Femme" ||
+          gender === "Female" ||
+          gender === "female" ||
+          gender === "femme"
         ? "FEMALE"
         : null;
 
