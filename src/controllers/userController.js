@@ -8,7 +8,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export async function register(req, res) {
   const { name, email, phone, password, city, gender } = req.body;
-  console.log("Request Body", req.body);
 
   try {
     const prismaGender =
@@ -29,7 +28,6 @@ export async function register(req, res) {
         .status(400)
         .json({ error: "Invalid gender value, try again please" });
     }
-    console.log("Prisma Gender", prismaGender);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (prismaGender === "MALE") {
@@ -57,6 +55,7 @@ export async function register(req, res) {
           gender: Gender.FEMALE,
         },
       });
+
       res.status(201).json({ message: "User registered successfully", user });
     }
   } catch (error) {
@@ -68,12 +67,18 @@ export async function login(req, res) {
   const { phone, password } = req.body;
 
   try {
+    if (!phone || !password) {
+      return res.status(400).json({ error: "Phone and password are required" });
+    }
+
     const user = await prisma.user.findUnique({ where: { phone } });
+
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = bcrypt.compare(password, user.password);
+
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
@@ -81,8 +86,10 @@ export async function login(req, res) {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
       expiresIn: "1h",
     });
+
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }

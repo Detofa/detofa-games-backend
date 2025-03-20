@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/", (req, res) => {
-  res.send("Hello from the backend!");
+  res.send("Hello from the backend 2!");
 });
 
 app.listen(PORT, () => {
