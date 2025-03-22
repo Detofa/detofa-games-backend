@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import { PrismaClient } from "@prisma/client";
 import userRoutes from "./src/routes/userRoutes.js";
+import scoreRouter from "./src/routes/scoreRoutes.js";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use("/api/users", userRoutes);
+app.use("/api/scores", scoreRouter);
 app.use("/", (req, res) => {
   res.send("Hello from the backend 2!");
 });

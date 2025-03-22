@@ -73,6 +73,8 @@ export async function login(req, res) {
 
     const user = await prisma.user.findUnique({ where: { phone } });
 
+    console.log("user", user);
+
     if (!user) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
@@ -84,7 +86,7 @@ export async function login(req, res) {
     }
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7200h",
     });
 
     res.status(200).json({ message: "Login successful", token });
