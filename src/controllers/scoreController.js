@@ -64,7 +64,18 @@ export const createScore = async (req, res) => {
     } else {
       // Scores exist → Update each type with the new score if it's greater than the existing score
       const updatePromises = existingScores.map((existingScore) => {
-        if (parseInt(score) > existingScore.score) {
+        if (existingScore.type === "DAILY") {
+          const today = new Date().toISOString().split("T")[0];
+          if (
+            existingScore.updatedAt.toISOString().split("T")[0] !== today ||
+            parseInt(score) > existingScore.score
+          ) {
+            return prisma.score.update({
+              where: { id: existingScore.id },
+              data: { score: parseInt(score) },
+            });
+          }
+        } else if (parseInt(score) > existingScore.score) {
           return prisma.score.update({
             where: { id: existingScore.id },
             data: { score: parseInt(score) },
