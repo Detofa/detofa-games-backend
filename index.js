@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import { PrismaClient } from "@prisma/client";
 import userRoutes from "./src/routes/userRoutes.js";
 import scoreRouter from "./src/routes/scoreRoutes.js";
-const videoRoutes = require('./src/routes/videoRoutes');
+const videoRoutes = require("./src/routes/videoRoutes");
 
 dotenv.config();
 
@@ -15,11 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000", // Localhost (Adjust port if necessary)
-      "http://10.0.2.2:3000", // Android Emulator (for React Native)
-      "https://detofa-games-backend.onrender.com", // Production Backend
-    ],
+    origin: "*",
     methods: "GET,POST,DELETE,PUT",
     allowedHeaders: "Content-Type,Authorization",
   })
