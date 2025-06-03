@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import { PrismaClient } from "@prisma/client";
 import userRoutes from "./src/routes/userRoutes.js";
 import scoreRouter from "./src/routes/scoreRoutes.js";
-import videoRoutes from "./src/routes/videoRoutes";
+import videoRoutes from "./src/routes/videoRoutes.js";
 
 dotenv.config();
 
