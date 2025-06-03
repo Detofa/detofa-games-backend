@@ -22,7 +22,7 @@ export const createScore = async (req, res) => {
     }
 
     const theuserId = decoded.userId; // Extract user ID from the decoded token
-    console.log("theuserId", theuserId);
+    console.log("theuserId here", theuserId);
 
     const user = await prisma.user.findUnique({
       where: { id: theuserId },
