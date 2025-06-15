@@ -15,8 +15,7 @@ export const auth = async (req, res, next) => {
   console.log("Incoming token:", token);
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Incoming decoded:", decoded);
-    console.log("Incoming decoded.userId:", decoded.userId);
+
     req.userId = decoded.userId;
     next();
   } catch (error) {

@@ -137,6 +137,7 @@ export async function login(req, res) {
 }
 
 export async function getProfile(req, res) {
+  console.log("req.userId", req.userId);
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
