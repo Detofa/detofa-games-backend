@@ -1,4 +1,4 @@
-import { Game, PrismaClient, ScoreType } from "@prisma/client";
+import { Game, PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -44,53 +44,37 @@ export const createScore = async (req, res) => {
         .json({ error: "Score must be a positive integer" });
     }
 
-    // Check if the user has existing scores for the game
-    const existingScores = await prisma.score.findMany({
+    // Check if the user has existing score for the game
+    const existingScore = await prisma.score.findFirst({
       where: { userId: theuserId, game },
     });
 
-    let newScores;
+    let newScore;
 
-    if (existingScores.length === 0) {
-      // No scores exist → Create ALL score types
-      newScores = await prisma.score.createMany({
-        data: Object.values(ScoreType).map((type) => ({
+    if (!existingScore) {
+      // No score exists → Create new score
+      newScore = await prisma.score.create({
+        data: {
           userId: theuserId,
           game,
           score: parseInt(score),
-          type,
-        })),
+          times: 1
+        },
       });
     } else {
-      // Scores exist → Update each type with the new score if it's greater than the existing score
-      const updatePromises = existingScores.map((existingScore) => {
-        if (existingScore.type === "DAILY") {
-          const today = new Date().toISOString().split("T")[0];
-          if (
-            existingScore.updatedAt.toISOString().split("T")[0] !== today ||
-            parseInt(score) > existingScore.score
-          ) {
-            return prisma.score.update({
-              where: { id: existingScore.id },
-              data: { score: parseInt(score) },
-            });
-          }
-        } else if (parseInt(score) > existingScore.score) {
-          return prisma.score.update({
-            where: { id: existingScore.id },
-            data: { score: parseInt(score) },
-          });
-        } else {
-          return Promise.resolve(existingScore); // Return the existing score without updating
-        }
+      // Score exists → Update with new score and increment times
+      newScore = await prisma.score.update({
+        where: { id: existingScore.id },
+        data: { 
+          score: parseInt(score),
+          times: { increment: 1 }
+        },
       });
-
-      newScores = await Promise.all(updatePromises);
     }
 
     res
       .status(201)
-      .json({ message: "Score(s) saved successfully", data: newScores });
+      .json({ message: "Score saved successfully", data: newScore });
   } catch (error) {
     console.error("Error creating/updating score:", error);
     res.status(500).json({ error: "Internal server error" });

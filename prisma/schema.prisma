@@ -60,11 +60,11 @@ model Score {
   userId    String
   game      Game
   score     Int
-  type      ScoreType
+  times     Int
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  @@index([userId, game, type, createdAt])
+  @@index([userId, game, times, createdAt])
 }
 
 model Video {
