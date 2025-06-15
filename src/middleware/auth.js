@@ -13,7 +13,7 @@ export const auth = async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-
+  console.log("Incoming token:", token);
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     console.log("Incoming userId:", req.userId);
