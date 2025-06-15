@@ -18,7 +18,7 @@ export async function register(req, res) {
     if (!password) errors.push("Password is required");
     if (!city) errors.push("City is required");
     if (!gender) errors.push("Gender is required");
-    
+
     if (errors.length > 0) {
       return res.status(400).json({ errors });
     }
@@ -137,28 +137,28 @@ export async function login(req, res) {
 }
 
 export async function getProfile(req, res) {
-    try {
-        const user = await prisma.user.findUnique({
-            where: { id: req.userId },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                city: true,
-                gender: true,
-                parent: true,
-                createdAt: true,
-                updatedAt: true
-            }
-        });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        city: true,
+        gender: true,
+        parent: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
+    console.log("user", user);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
 }

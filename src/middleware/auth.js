@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export const auth = async (req, res, next) => {
-  console.log("Incoming headers on Render:", req.headers);
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -17,6 +16,7 @@ export const auth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("Incoming userId:", req.userId);
     req.userId = decoded.userId;
     next();
   } catch (error) {
