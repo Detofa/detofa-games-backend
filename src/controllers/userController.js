@@ -142,18 +142,15 @@ export async function getProfile(req, res) {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
       select: {
-        id: true,
         name: true,
         email: true,
         phone: true,
         city: true,
         gender: true,
         parent: true,
-        createdAt: true,
-        updatedAt: true,
       },
     });
-
+    console.log("user", user);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
