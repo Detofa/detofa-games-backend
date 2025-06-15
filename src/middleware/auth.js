@@ -6,7 +6,6 @@ export const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.log("Missing or malformed Authorization header:", authHeader);
     return res
       .status(401)
       .json({ error: "Authorization header missing or invalid" });
@@ -16,7 +15,8 @@ export const auth = async (req, res, next) => {
   console.log("Incoming token:", token);
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Incoming userId:", req.userId);
+    console.log("Incoming decoded:", decoded);
+    console.log("Incoming decoded.userId:", decoded.userId);
     req.userId = decoded.userId;
     next();
   } catch (error) {
