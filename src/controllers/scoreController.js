@@ -8,22 +8,6 @@ export const createScore = async (req, res) => {
   try {
     const { game, score } = req.body;
 
-    // // Ensure token is provided
-    // if (!userId) {
-    //   return res.status(401).json({ error: "Unauthorized: No token provided" });
-    // }
-
-    // // Verify and decode the token
-    // let decoded = "";
-    // try {
-    //   decoded = jwt.verify(userId, JWT_SECRET);
-    // } catch (error) {
-    //   return res.status(401).json({ error: "Unauthorized: Invalid token" });
-    // }
-
-    // const theuserId = decoded.userId; // Extract user ID from the decoded token
-    // console.log("theuserId here", theuserId);
-
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
     });
@@ -46,7 +30,7 @@ export const createScore = async (req, res) => {
 
     // Check if the user has existing score for the game
     const existingScore = await prisma.score.findFirst({
-      where: { userId: theuserId, game },
+      where: { userId: req.userId, game },
     });
 
     let newScore;
@@ -55,7 +39,7 @@ export const createScore = async (req, res) => {
       // No score exists → Create new score
       newScore = await prisma.score.create({
         data: {
-          userId: theuserId,
+          userId: req.userId,
           game,
           score: parseInt(score),
           times: 1,
