@@ -6,26 +6,26 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key"; // Ensure this i
 
 export const createScore = async (req, res) => {
   try {
-    const { userId, game, score } = req.body;
+    const { game, score } = req.body;
 
-    // Ensure token is provided
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized: No token provided" });
-    }
+    // // Ensure token is provided
+    // if (!userId) {
+    //   return res.status(401).json({ error: "Unauthorized: No token provided" });
+    // }
 
-    // Verify and decode the token
-    let decoded = "";
-    try {
-      decoded = jwt.verify(userId, JWT_SECRET);
-    } catch (error) {
-      return res.status(401).json({ error: "Unauthorized: Invalid token" });
-    }
+    // // Verify and decode the token
+    // let decoded = "";
+    // try {
+    //   decoded = jwt.verify(userId, JWT_SECRET);
+    // } catch (error) {
+    //   return res.status(401).json({ error: "Unauthorized: Invalid token" });
+    // }
 
-    const theuserId = decoded.userId; // Extract user ID from the decoded token
-    console.log("theuserId here", theuserId);
+    // const theuserId = decoded.userId; // Extract user ID from the decoded token
+    // console.log("theuserId here", theuserId);
 
     const user = await prisma.user.findUnique({
-      where: { id: theuserId },
+      where: { id: req.userId },
     });
 
     if (!user) {
@@ -58,16 +58,16 @@ export const createScore = async (req, res) => {
           userId: theuserId,
           game,
           score: parseInt(score),
-          times: 1
+          times: 1,
         },
       });
     } else {
       // Score exists → Update with new score and increment times
       newScore = await prisma.score.update({
         where: { id: existingScore.id },
-        data: { 
+        data: {
           score: parseInt(score),
-          times: { increment: 1 }
+          times: { increment: 1 },
         },
       });
     }
