@@ -16,6 +16,7 @@ enum Game {
   SNAKE
   FLAPPY_BIRD
   TETRIS
+  MATH_DIVISION
 }
 
 enum ScoreType {
@@ -55,14 +56,14 @@ model User {
 }
 
 model Score {
-  id        String    @id @default(uuid())
-  user      User      @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
   userId    String
   game      Game
   score     Int
   times     Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, game, times, createdAt])
 }
