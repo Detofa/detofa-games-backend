@@ -56,7 +56,6 @@ export const highestScoresPerGame = async (req, res) => {
     const result = Object.entries(bestScoresByGame).map(([game, data]) => ({
       game,
       score: data.score,
-      date: data.createdAt,
     }));
 
     res.json(result);
