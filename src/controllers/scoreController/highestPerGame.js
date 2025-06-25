@@ -39,7 +39,7 @@ export const highestScoresPerGame = async (req, res) => {
         ...(startDate ? { createdAt: { gte: startDate } } : {}),
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
@@ -48,7 +48,10 @@ export const highestScoresPerGame = async (req, res) => {
 
     for (const score of scores) {
       const game = score.game;
-      if (!bestScoresByGame[game] || score.score > bestScoresByGame[game].score) {
+      if (
+        !bestScoresByGame[game] ||
+        score.score > bestScoresByGame[game].score
+      ) {
         bestScoresByGame[game] = score;
       }
     }
