@@ -12,6 +12,12 @@ enum Gender {
   FEMALE
 }
 
+enum VideoGender {
+  MALE
+  FEMALE
+  BOTH
+}
+
 enum Game {
   SNAKE
   FLAPPY_BIRD
@@ -37,22 +43,23 @@ enum UserStatus {
 }
 
 model User {
-  id        String     @id @default(cuid())
+  id        String      @id @default(cuid())
   email     String
   password  String?
   name      String?
-  phone     String?    @unique
+  phone     String?     @unique
   country   String?
   city      String?
   parent    String?
   imageUrl  String?
-  account   Int        @default(0)
+  account   Int         @default(0)
   gender    Gender?
-  status    UserStatus @default(USER)
+  status    UserStatus  @default(USER)
   scores    Score[]
   videos    Video[] // Added this field
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  VideoView VideoView[]
 }
 
 model Score {
@@ -69,20 +76,34 @@ model Score {
 }
 
 model Video {
-  id          String   @id @default(uuid())
-  user        User     @relation(fields: [userId], references: [id])
+  id          String       @id @default(uuid())
+  user        User         @relation(fields: [userId], references: [id])
   userId      String
   company     String
   type        String
+  videoPoint  Int
   vidSource   String
-  viewsNumber Int      @default(0)
-  gender      Gender?
-  ltage       Int? // Less than age limit
-  gtage       Int? // Greater than age limit
+  viewsNumber Int          @default(0)
+  viewLimit   Int          @default(10)
+  gender      VideoGender?
+  ltage       Int?         @default(3) // Less than age limit
+  gtage       Int?         @default(100) // Greater than age limit
   town        String?
   country     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  VideoView   VideoView[]
 
   @@index([userId])
+}
+
+model VideoView {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  video    Video    @relation(fields: [videoId], references: [id])
+  videoId  String
+  viewedAt DateTime @default(now())
+
+  @@unique([userId, videoId]) // Prevents duplicate views per user unless you want to allow multiple
 }

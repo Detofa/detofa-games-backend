@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
+import { startOfDay, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
 export const createScore = async (req, res) => {
   try {
@@ -79,3 +78,5 @@ export const createScore = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
