@@ -36,23 +36,27 @@ enum UserStatus {
 }
 
 model User {
-  id        String      @id @default(cuid())
-  email     String
-  password  String?
-  name      String?
-  phone     String?     @unique
-  country   String?
-  city      String?
-  parent    String?
-  imageUrl  String?
-  account   Int         @default(0)
-  gender    Gender?
-  status    UserStatus  @default(USER)
-  scores    Score[]
-  videos    Video[] // Added this field
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  VideoView VideoView[]
+  id         String      @id @default(cuid())
+  email      String
+  password   String?
+  name       String?
+  phone      String?     @unique
+  country    String?
+  city       String?
+  parent     String?
+  imageUrl   String?
+  account    Int         @default(0)
+  gender     Gender?
+  status     UserStatus  @default(USER)
+  scores     Score[]
+  videos     Video[] // Added this field
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  VideoView  VideoView[]
+  ordersMade Order[]     @relation("OrderUser")
+
+  // Orders delivered by this user (delivery guy role)
+  ordersDelivered Order[] @relation("OrderDelivery")
 }
 
 model Score {
@@ -99,4 +103,59 @@ model VideoView {
   viewedAt DateTime @default(now())
 
   @@unique([userId, videoId]) // Prevents duplicate views per user unless you want to allow multiple
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  stock       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orders      OrderItem[]
+}
+
+model Order {
+  id     String @id @default(cuid())
+  user   User   @relation("OrderUser", fields: [userId], references: [id])
+  userId String
+
+  deliveryGuy   User?   @relation("OrderDelivery", fields: [deliveryGuyId], references: [id])
+  deliveryGuyId String? // Nullable until assigned
+
+  totalAmount Float
+  status      OrderStatus       @default(PENDING)
+  orderItems  OrderItem[]
+  tracking    LocationTracking?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Float
+}
+
+model LocationTracking {
+  id        String   @id @default(cuid())
+  order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @unique
+  latitude  Float
+  longitude Float
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

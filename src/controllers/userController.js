@@ -146,16 +146,8 @@ export async function getProfile(req, res) {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const {
-      id,
-      status,
-      country,
-      imageUrl,
-      password,
-      createdAt,
-      updatedAt,
-      ...safeUser
-    } = user;
+    const { id, status, country, password, createdAt, updatedAt, ...safeUser } =
+      user;
     res.status(200).json(safeUser);
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
