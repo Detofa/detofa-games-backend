@@ -3,13 +3,14 @@ import { startOfDay, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
 const prisma = new PrismaClient();
 
-
 export const topScores = async (req, res) => {
   const { gameName, filter } = req.body;
   const currentUserId = req.userId;
 
   if (!gameName) {
-    return res.status(400).json({ error: "gameName is required in the request body" });
+    return res
+      .status(400)
+      .json({ error: "game name is required in the request body" });
   }
 
   // Determine filter range
@@ -77,4 +78,3 @@ export const topScores = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
