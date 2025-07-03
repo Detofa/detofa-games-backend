@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
 export const checkVideoView = async (req, res) => {
@@ -45,8 +46,36 @@ export const checkVideoView = async (req, res) => {
       });
     }
 
-    // If neither, allow
-    return res.json({ canWatch: true, message: "User can watch the video." });
+    // If video can be watched, create view and update accounts
+    const result = await prisma.$transaction(async (tx) => {
+      // Create video view record
+      const newView = await tx.videoView.create({
+        data: {
+          userId,
+          videoId,
+        },
+      });
+
+      // Increment video viewsNumber
+      await tx.video.update({
+        where: { id: videoId },
+        data: { viewsNumber: { increment: 1 } },
+      });
+
+      // Add videoPoint to user account
+      await tx.user.update({
+        where: { id: userId },
+        data: { account: { increment: video.videoPoint } },
+      });
+
+      return { newView, videoPoint: video.videoPoint };
+    });
+
+    return res.json({
+      canWatch: true,
+      message: "User can watch the video.",
+      pointsEarned: result.videoPoint,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });

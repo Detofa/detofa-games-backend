@@ -56,7 +56,27 @@ model User {
   ordersMade Order[]     @relation("OrderUser")
 
   // Orders delivered by this user (delivery guy role)
-  ordersDelivered Order[] @relation("OrderDelivery")
+  ordersDelivered      Order[]       @relation("OrderDelivery")
+  sentTransactions     Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+}
+
+model Transaction {
+  id         String @id @default(cuid())
+  fromUser   User   @relation("SentTransactions", fields: [fromUserId], references: [id])
+  fromUserId String
+
+  toUser   User   @relation("ReceivedTransactions", fields: [toUserId], references: [id])
+  toUserId String
+
+  amount         Int // Total amount transferred (not including fee)
+  transactionFee Int @default(0) // Fee charged for the transaction
+
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([fromUserId])
+  @@index([toUserId])
 }
 
 model Score {

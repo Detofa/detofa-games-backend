@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
 import { getUserIdFromToken } from "./../utils/authUtils.js"; // Import the updated utility
 
 const prisma = new PrismaClient();

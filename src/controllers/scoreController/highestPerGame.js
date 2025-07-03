@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
 import { startOfDay, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
 const prisma = new PrismaClient();

@@ -2,10 +2,12 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
 import userRoutes from "./src/routes/userRoutes.js";
 import scoreRouter from "./src/routes/scoreRoutes.js";
 import videoRoutes from "./src/routes/videoRoutes.js";
+import transactionRoutes from "./src/routes/transactionRoutes.js";
 
 dotenv.config();
 
@@ -25,6 +27,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/scores", scoreRouter);
 app.use("/api/videos", videoRoutes);
+app.use("/api/transactions", transactionRoutes);
 app.use("/", (req, res) => {
   res.send("Hello from the backend 2!");
 });
