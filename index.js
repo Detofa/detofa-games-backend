@@ -2,8 +2,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
 import userRoutes from "./src/routes/userRoutes.js";
 import scoreRouter from "./src/routes/scoreRoutes.js";
 import videoRoutes from "./src/routes/videoRoutes.js";
@@ -11,7 +9,6 @@ import transactionRoutes from "./src/routes/transactionRoutes.js";
 
 dotenv.config();
 
-const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 5000;
 

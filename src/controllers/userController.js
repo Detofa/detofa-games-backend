@@ -1,9 +1,9 @@
 import pkg from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import prisma from "../utils/prisma.js";
 
-const { PrismaClient, Gender, UserStatus } = pkg;
-const prisma = new PrismaClient();
+const { Gender, UserStatus } = pkg;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function register(req, res) {

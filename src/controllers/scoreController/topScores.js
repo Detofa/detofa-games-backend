@@ -1,10 +1,10 @@
 import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
+import prisma from "../../utils/prisma.js";
 import { startOfDay, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
-const prisma = new PrismaClient();
+const { Game } = pkg;
 
-export const topScores = async (req, res) => {
+export const getTopScores = async (req, res) => {
   const { gameName, filter } = req.body;
   const currentUserId = req.userId;
 

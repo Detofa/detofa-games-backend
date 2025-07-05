@@ -1,8 +1,8 @@
 import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
+import prisma from "../utils/prisma.js";
 import { getUserIdFromToken } from "./../utils/authUtils.js"; // Import the updated utility
 
-const prisma = new PrismaClient();
+const { Game } = pkg;
 
 export const getScores = async (req, res) => {
   try {

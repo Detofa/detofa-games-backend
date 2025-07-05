@@ -1,8 +1,8 @@
 import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
+import prisma from "../../utils/prisma.js";
 import { startOfDay, startOfWeek, startOfMonth, startOfYear } from "date-fns";
 
-const prisma = new PrismaClient();
+const { Game } = pkg;
 
 export const createScore = async (req, res) => {
   try {
