@@ -7,8 +7,6 @@ export async function transferFunds(req, res) {
   const { toUserPhone, amount, note } = req.body;
   const fromUserId = req.userId; // From auth middleware
 
-  console.log("we are here for transaction");
-
   try {
     // Validate required fields
     if (!toUserPhone || !amount) {

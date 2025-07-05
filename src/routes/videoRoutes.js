@@ -7,7 +7,7 @@ import {
 import { checkVideoView } from "../controllers/videoController/checkVideoView.js";
 import { auth } from "../middleware/auth.js";
 
-router.get("/", getAllVideos);
+router.get("/", auth, getAllVideos);
 router.post("/check", auth, checkVideoView);
 router.post("/payout", auth, payoutForVideo);
 

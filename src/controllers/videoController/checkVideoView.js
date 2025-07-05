@@ -10,11 +10,16 @@ export const checkVideoView = async (req, res) => {
     return res.status(400).json({ error: "videoId is required" });
   }
 
+  if (!userId) {
+    return res.status(401).json({ error: "User not authenticated" });
+  }
+
   try {
     // Find the video
     const video = await prisma.video.findUnique({
       where: { id: videoId },
     });
+
     if (!video) {
       return res.status(404).json({ error: "Video not found" });
     }
@@ -28,10 +33,12 @@ export const checkVideoView = async (req, res) => {
         },
       },
     });
+
     if (userView) {
       return res.status(403).json({
         canWatch: false,
-        message: "User has already viewed this video.",
+        message: "You have already viewed this video.",
+        alreadyViewed: true,
       });
     }
 
@@ -39,15 +46,42 @@ export const checkVideoView = async (req, res) => {
     const viewCount = await prisma.videoView.count({
       where: { videoId },
     });
+
     if (viewCount >= video.viewLimit) {
       return res.status(403).json({
         canWatch: false,
         message: "View limit reached for this video.",
+        viewLimitReached: true,
+        currentViews: viewCount,
+        maxViews: video.viewLimit,
       });
     }
 
     // If video can be watched, create view and update accounts
     const result = await prisma.$transaction(async (tx) => {
+      // Double-check view limit within transaction to prevent race conditions
+      const currentViewCount = await tx.videoView.count({
+        where: { videoId },
+      });
+
+      if (currentViewCount >= video.viewLimit) {
+        throw new Error("View limit reached during transaction");
+      }
+
+      // Double-check user hasn't already viewed within transaction
+      const existingUserView = await tx.videoView.findUnique({
+        where: {
+          userId_videoId: {
+            userId,
+            videoId,
+          },
+        },
+      });
+
+      if (existingUserView) {
+        throw new Error("User has already viewed this video");
+      }
+
       // Create video view record
       const newView = await tx.videoView.create({
         data: {
@@ -73,11 +107,37 @@ export const checkVideoView = async (req, res) => {
 
     return res.json({
       canWatch: true,
-      message: "User can watch the video.",
+      message: "You can watch the video.",
       pointsEarned: result.videoPoint,
+      videoInfo: {
+        id: video.id,
+        company: video.company,
+        type: video.type,
+        videoPoint: video.videoPoint,
+        viewLimit: video.viewLimit,
+        currentViews: viewCount + 1,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error in checkVideoView:", error);
+
+    // Handle specific transaction errors
+    if (error.message === "View limit reached during transaction") {
+      return res.status(403).json({
+        canWatch: false,
+        message: "View limit reached for this video.",
+        viewLimitReached: true,
+      });
+    }
+
+    if (error.message === "User has already viewed this video") {
+      return res.status(403).json({
+        canWatch: false,
+        message: "You have already viewed this video.",
+        alreadyViewed: true,
+      });
+    }
+
     return res.status(500).json({ error: "Internal server error" });
   }
 };
