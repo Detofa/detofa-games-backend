@@ -31,11 +31,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "7200h",
-    });
+    const token = jwt.sign(
+      { userId: user.id, status: user.status },
+      JWT_SECRET,
+      {
+        expiresIn: "7200h",
+      }
+    );
 
-    return NextResponse.json({ message: "Login successful", token });
+    return NextResponse.json({
+      message: "Login successful",
+      token,
+      status: user.status,
+    });
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(

@@ -20,3 +20,20 @@ export function verifyToken(request: NextRequest): { userId: string } | null {
     return null;
   }
 }
+
+export function isAdmin(request: NextRequest): boolean {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { status?: string };
+    return Boolean(
+      decoded.status === "ADMIN" ||
+        (decoded.status &&
+          typeof decoded.status === "string" &&
+          decoded.status.endsWith("ADMIN"))
+    );
+  } catch {
+    return false;
+  }
+}

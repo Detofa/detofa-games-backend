@@ -1,3 +1,8 @@
 {
-  "/page": "app/page.js"
+  "/api/users/profile/route": "app/api/users/profile/route.js",
+  "/api/scores/highestpergame/route": "app/api/scores/highestpergame/route.js",
+  "/api/scores/top/route": "app/api/scores/top/route.js",
+  "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/users/page": "app/dashboard/users/page.js"
 }

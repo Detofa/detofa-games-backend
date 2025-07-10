@@ -1,27 +1,123 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/preflight";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --color-bg: #ffffff;
+  --color-text: #121723;
+  --color-bg-secondary: #f8f9fa;
+  --color-text-secondary: #6c757d;
+  --color-border: #dee2e6;
+  --color-primary: #007bff;
+  --color-primary-dark: #0056b3;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+  --color-light: #f8f9fa;
+  --color-dark: #343a40;
+  --color-dark-blue: #1a237e;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+[data-theme="dark"] {
+  --color-bg: #171c28;
+  --color-text: #ffffff;
+  --color-bg-secondary: #2c313c;
+  --color-text-secondary: #a0a5b1;
+  --color-border: #4a4e5a;
+  --color-primary: #007bff;
+  --color-primary-dark: #0056b3;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+  --color-light: #4a4e5a;
+  --color-dark: #ffffff;
+  --color-dark-blue: #1a237e;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Add dark mode support for common elements */
+input,
+button,
+select,
+textarea {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+/* Add dark mode support for cards */
+.card {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border);
+}
+
+/* Add dark mode support for navigation */
+.nav-link {
+  color: var(--color-text-secondary);
+}
+
+.nav-link:hover {
+  color: var(--color-text);
+}
+
+/* Add dark mode support for tables */
+.table {
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.table th,
+.table td {
+  border-color: var(--color-border);
+}
+
+/* Add dark mode support for alerts */
+.alert {
+  color: var(--color-text);
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-border);
+}
+
+/* Add dark mode support for forms */
+.form-control {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Ensure all components use CSS variables */
+[data-theme="dark"] .bg-white {
+  background-color: var(--color-bg) !important;
+}
+
+[data-theme="dark"] .text-white {
+  color: var(--color-text) !important;
+}
+
+[data-theme="dark"] .border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+[data-theme="dark"] .bg-gray-100 {
+  background-color: var(--color-bg-secondary) !important;
+}
+
+[data-theme="dark"] .text-gray-600 {
+  color: var(--color-text-secondary) !important;
 }

@@ -1,13 +1,12 @@
-import type { Metadata } from "next";
+"use client";
+
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../styles/index.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Detofa Games - E-commerce",
-  description: "Your one-stop shop for gaming products and accessories",
-};
 
 export default function RootLayout({
   children,
@@ -15,10 +14,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">{children}</div>
+    <html suppressHydrationWarning lang="en">
+      {/*
+        <head /> will contain the components returned by the nearest parent
+        head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
+      */}
+      <head />
+
+      <body className={`bg-[var(--color-bg)] text-[var(--color-text)] ${inter.className}`}>
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+          <ScrollToTop />
+        </Providers>
       </body>
     </html>
   );
 }
+
+import { Providers } from "./providers";
