@@ -107,6 +107,8 @@ model Video {
   gtage       Int?         @default(100) // Greater than age limit
   town        String?
   country     String?
+  product     Product?     @relation(fields: [productId], references: [id])
+  productId   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   VideoView   VideoView[]
@@ -155,6 +157,7 @@ model Product {
   updatedAt    DateTime              @updatedAt
   orders       OrderItem[]
   availability ProductAvailability[]
+  Video        Video[]
 }
 
 model ProductCategory {

@@ -28,6 +28,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
+    // console.log("Video details:", {
+    //   id: video.id,
+    //   company: video.company,
+    //   type: video.type,
+    //   videoPoint: video.videoPoint,
+    //   viewLimit: video.viewLimit,
+    //   viewsNumber: video.viewsNumber,
+    //   productId: (video as any).productId || "undefined",
+    //   userId: video.userId,
+    //   vidSource: video.vidSource,
+    //   gender: video.gender,
+    //   ltage: video.ltage,
+    //   gtage: video.gtage,
+    //   town: video.town,
+    //   country: video.country,
+    //   createdAt: video.createdAt,
+    //   updatedAt: video.updatedAt,
+    // });
+
+    // console.log("Raw video object keys:", Object.keys(video));
+    // console.log("Video has productId property:", "productId" in video);
+
     const userView = await prisma.videoView.findUnique({
       where: {
         userId_videoId: {
@@ -87,12 +109,12 @@ export async function POST(req: NextRequest) {
         throw new Error("User has already viewed this video");
       }
 
-      await tx.videoView.create({
-        data: {
-          userId,
-          videoId,
-        },
-      });
+      // await tx.videoView.create({
+      //   data: {
+      //     userId,
+      //     videoId,
+      //   },
+      // });
 
       await tx.video.update({
         where: { id: videoId },
@@ -101,18 +123,8 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      const updatedUser = await tx.user.update({
-        where: { id: userId },
-        data: {
-          account: {
-            increment: video.videoPoint,
-          },
-        },
-      });
-
       return {
         videoPoint: video.videoPoint,
-        newAccount: updatedUser.account,
       };
     });
 
@@ -120,7 +132,6 @@ export async function POST(req: NextRequest) {
       {
         canWatch: true,
         message: "You can watch the video.",
-        pointsEarned: result.videoPoint,
         videoInfo: {
           id: video.id,
           company: video.company,
@@ -128,6 +139,8 @@ export async function POST(req: NextRequest) {
           videoPoint: video.videoPoint,
           viewLimit: video.viewLimit,
           currentViews: totalViews + 1,
+          viewsNumber: video.viewsNumber,
+          productId: (video as any).productId || "undefined",
         },
       },
       { status: 200 }

@@ -43,6 +43,10 @@ export async function GET(req: NextRequest) {
       note: t.note,
       createdAt: t.createdAt,
       type: t.fromUserId === userId ? "sent" : "received",
+      otherPersonPhone:
+        t.fromUserId === userId ? t.toUser.phone : t.fromUser.phone,
+      otherPersonName:
+        t.fromUserId === userId ? t.toUser.name : t.fromUser.name,
     }));
 
     return NextResponse.json({
