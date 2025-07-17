@@ -2,15 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import { useUser } from "../providers";
+import { useRouter } from "next/navigation";
 
 const AccountPage = () => {
-  const { token } = useUser();
+  const { token, isLoggedIn } = useUser();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      router.replace("/signin");
+      return;
+    }
     if (!token) return;
     setLoading(true);
     fetch("/api/users/profile", {
@@ -29,7 +35,7 @@ const AccountPage = () => {
         setProfile(null);
       })
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, isLoggedIn, router]);
 
   const handleDelete = async () => {
     if (
@@ -50,6 +56,8 @@ const AccountPage = () => {
       setDeleteStatus("error");
     }
   };
+
+  if (!isLoggedIn) return null;
 
   return (
     <section className="relative z-10 overflow-hidden pt-36 pb-16 md:pb-20 lg:pt-[180px] lg:pb-28">
