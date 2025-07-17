@@ -185,6 +185,16 @@ const Header = () => {
                     </Link>
                   </>
                 )}
+                {isLoggedIn && (
+                  <>
+                    <Link
+                      href="/account"
+                      className="bg-primary text-white rounded-xs px-6 py-2 text-base font-semibold shadow-btn hover:bg-primary/90 transition duration-300 mr-2 md:inline-block hidden"
+                    >
+                      Account
+                    </Link>
+                  </>
+                )}
                 {isLoggedIn &&
                   status &&
                   (status === "ADMIN" || status.endsWith("ADMIN")) && (

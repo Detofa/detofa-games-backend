@@ -38,3 +38,37 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return NextResponse.json(
+      { error: "Missing or invalid token" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const userId = await getUserIdFromRequest(req);
+    if (!userId) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Create a DataDeletionRequest
+    await prisma.dataDeletionRequest.create({
+      data: { userId },
+    });
+
+    return NextResponse.json(
+      { message: "Data deletion request created." },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Data deletion request error:", error);
+    return NextResponse.json(
+      { error: "Failed to create data deletion request" },
+      { status: 500 }
+    );
+  }
+}

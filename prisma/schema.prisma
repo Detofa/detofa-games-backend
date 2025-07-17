@@ -228,3 +228,10 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
+
+model DataDeletionRequest {
+  id      String   @id @default(cuid())
+  userId  String
+  date    DateTime @default(now())
+  updated DateTime @updatedAt
+}
