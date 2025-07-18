@@ -56,9 +56,11 @@ model User {
   ordersMade Order[]     @relation("OrderUser")
 
   // Orders delivered by this user (delivery guy role)
-  ordersDelivered      Order[]       @relation("OrderDelivery")
-  sentTransactions     Transaction[] @relation("SentTransactions")
-  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+  ordersDelivered      Order[]           @relation("OrderDelivery")
+  sentTransactions     Transaction[]     @relation("SentTransactions")
+  receivedTransactions Transaction[]     @relation("ReceivedTransactions")
+  Cart                 Cart?
+  DeliveryAddress      DeliveryAddress[]
 }
 
 model Transaction {
@@ -158,6 +160,7 @@ model Product {
   orders       OrderItem[]
   availability ProductAvailability[]
   Video        Video[]
+  CartItem     CartItem[]
 }
 
 model ProductCategory {
@@ -186,20 +189,70 @@ model ProductImage {
   @@index([productId, isPrimary])
 }
 
-model Order {
+model Cart {
   id     String @id @default(cuid())
-  user   User   @relation("OrderUser", fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  deliveryGuy   User?   @relation("OrderDelivery", fields: [deliveryGuyId], references: [id])
-  deliveryGuyId String? // Nullable until assigned
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  totalAmount Float
-  status      OrderStatus       @default(PENDING)
-  orderItems  OrderItem[]
-  tracking    LocationTracking?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  @@unique([userId]) // Each user has one active cart
+}
+
+model CartItem {
+  id     String @id @default(cuid())
+  cart   Cart   @relation(fields: [cartId], references: [id])
+  cartId String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId]) // Prevent duplicate products in same cart
+}
+
+model DeliveryAddress {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  label     String? // "Home", "Office", etc.
+  address   String
+  city      String
+  country   String
+  latitude  Float?
+  longitude Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Order {
+  id                String           @id @default(cuid())
+  user              User             @relation("OrderUser", fields: [userId], references: [id])
+  userId            String
+  deliveryGuy       User?            @relation("OrderDelivery", fields: [deliveryGuyId], references: [id])
+  deliveryGuyId     String?
+  totalAmount       Float
+  status            OrderStatus      @default(PENDING)
+  receiverName      String
+  receiverPhone     String
+  deliveryNote      String?
+  deliveryAddressId String?
+  deliveryAddress   DeliveryAddress? @relation(fields: [deliveryAddressId], references: [id])
+
+  orderItems OrderItem[]
+  tracking   LocationTracking?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
