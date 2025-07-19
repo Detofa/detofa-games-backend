@@ -1,0 +1,4 @@
+# app-ads.txt for Detofa Games
+# Replace the following line with your actual ad network details
+# Format: <ad system domain>, <publisher ID>, <relationship>, <certification authority ID>
+google.com, pub-8476341961121361, DIRECT, f08c47fec0942fa0 
