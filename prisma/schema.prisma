@@ -36,31 +36,36 @@ enum UserStatus {
 }
 
 model User {
-  id         String      @id @default(cuid())
-  email      String
-  password   String?
-  name       String?
-  phone      String?     @unique
-  country    String?
-  city       String?
-  parent     String?
-  imageUrl   String?
-  account    Int         @default(0)
-  gender     Gender?
-  status     UserStatus  @default(USER)
-  scores     Score[]
-  videos     Video[] // Added this field
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  VideoView  VideoView[]
-  ordersMade Order[]     @relation("OrderUser")
-
-  // Orders delivered by this user (delivery guy role)
-  ordersDelivered      Order[]           @relation("OrderDelivery")
-  sentTransactions     Transaction[]     @relation("SentTransactions")
-  receivedTransactions Transaction[]     @relation("ReceivedTransactions")
+  id                   String                      @id @default(cuid())
+  email                String                      @unique
+  password             String?
+  name                 String?
+  phone                String?                     @unique
+  country              String?
+  city                 String?
+  parent               String?
+  imageUrl             String?
+  account              Int                         @default(0)
+  gender               Gender?
+  status               UserStatus                  @default(USER)
+  googleId             String?                     @unique
+  scores               Score[]
+  videos               Video[] // Added this field
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
+  VideoView            VideoView[]
+  ordersMade           Order[]                     @relation("OrderUser")
+  ordersDelivered      Order[]                     @relation("OrderDelivery")
+  sentTransactions     Transaction[]               @relation("SentTransactions")
+  receivedTransactions Transaction[]               @relation("ReceivedTransactions")
   Cart                 Cart?
   DeliveryAddress      DeliveryAddress[]
+  mathAdditionSessions MathAdditionSession[]       @relation("HostedSessions")
+  mathAdditionPlayers  MathAdditionSessionPlayer[]
+  mathAdditionGuesses  MathAdditionGuess[]
+  totalScore           Int                         @default(0)
+  MathAdditionSession  MathAdditionSession[]
+  notifications        UserNotification[]
 }
 
 model Transaction {
@@ -287,4 +292,90 @@ model DataDeletionRequest {
   userId  String
   date    DateTime @default(now())
   updated DateTime @updatedAt
+}
+
+// --- Math Addition Game Models ---
+enum GameMode {
+  SOLO
+  GROUP
+}
+
+enum SessionStatus {
+  WAITING
+  PLAYING
+  ENDED
+}
+
+model MathAdditionSession {
+  id          String                      @id @default(cuid())
+  hostUserId  String
+  hostUser    User                        @relation("HostedSessions", fields: [hostUserId], references: [id])
+  gameMode    GameMode
+  numberCount Int                         @default(10)
+  status      SessionStatus               @default(WAITING)
+  createdAt   DateTime                    @default(now())
+  players     MathAdditionSessionPlayer[]
+  numbers     MathAdditionSessionNumber[]
+  guesses     MathAdditionGuess[]
+  User        User?                       @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model MathAdditionSessionPlayer {
+  id         String              @id @default(cuid())
+  sessionId  String
+  session    MathAdditionSession @relation(fields: [sessionId], references: [id])
+  userId     String
+  user       User                @relation(fields: [userId], references: [id])
+  isHost     Boolean             @default(false)
+  joinedAt   DateTime            @default(now())
+  eliminated Boolean             @default(false)
+  ranking    Int?
+}
+
+model MathAdditionSessionNumber {
+  id        String              @id @default(cuid())
+  sessionId String
+  session   MathAdditionSession @relation(fields: [sessionId], references: [id])
+  index     Int
+  value     Int
+}
+
+model MathAdditionGuess {
+  id                        String              @id @default(cuid())
+  sessionId                 String
+  session                   MathAdditionSession @relation(fields: [sessionId], references: [id])
+  userId                    String
+  user                      User                @relation(fields: [userId], references: [id])
+  guessValue                Int
+  isCorrect                 Boolean
+  submittedAt               DateTime            @default(now())
+  distanceFromCorrectAnswer Int
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  type      String? // e.g., "INFO", "ALERT", "ORDER", etc.
+  createdAt DateTime @default(now())
+  updated   DateTime @updatedAt
+
+  // Relations
+  recipients UserNotification[]
+}
+
+model UserNotification {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId String
+
+  isRead     Boolean  @default(false)
+  receivedAt DateTime @default(now())
+  updated    DateTime @updatedAt
+
+  @@unique([userId, notificationId]) // Prevent duplicate notifications
 }

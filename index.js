@@ -2,6 +2,11 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import {
+  initializePassport,
+  authenticateGoogle,
+  googleCallback,
+} from "./src/auth/googleAuth.js";
 
 dotenv.config();
 
@@ -17,6 +22,14 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(express.json());
+
+// Initialize passport middleware
+app.use(initializePassport());
+
+// Google OAuth routes
+app.get("/auth/google", authenticateGoogle);
+
+app.get("/auth/google/callback", googleCallback);
 
 // Health check endpoint
 app.use("/", (req, res) => {

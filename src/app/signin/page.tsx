@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const SigninPage = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +36,64 @@ const SigninPage = () => {
       setError("Login failed. Please try again.");
     }
   };
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    setError("");
+
+    try {
+      // Step 1: Redirect to Google OAuth
+      window.location.href = "/api/auth/google";
+    } catch (err) {
+      setError("Google login failed. Please try again.");
+      setIsGoogleLoading(false);
+    }
+  };
+
+  // Check for Google OAuth callback parameters
+  const checkForGoogleCallback = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    const user = urlParams.get("user");
+    const success = urlParams.get("success");
+    const error = urlParams.get("error");
+    const details = urlParams.get("details");
+
+    if (error) {
+      setError(
+        `Google login failed: ${error}${details ? ` - ${details}` : ""}`
+      );
+      return;
+    }
+
+    if (success === "true" && token && user) {
+      handleGoogleSuccess(token, user);
+    }
+  };
+
+  const handleGoogleSuccess = (token: string, userStr: string) => {
+    try {
+      const user = JSON.parse(userStr);
+
+      // Store token and user data
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", userStr);
+
+      // Redirect based on user status
+      if (user.status === "ADMIN" || user.status?.endsWith("ADMIN")) {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (err) {
+      setError("Failed to process Google login data");
+    }
+  };
+
+  // Check for Google callback on component mount
+  useEffect(() => {
+    checkForGoogleCallback();
+  }, []);
 
   return (
     <>
@@ -94,6 +153,15 @@ const SigninPage = () => {
                     </button>
                   </div>
                 </form>
+                <div className="mb-6">
+                  <button
+                    onClick={handleGoogleLogin}
+                    disabled={isGoogleLoading}
+                    className="shadow-submit dark:shadow-submit-dark bg-red-600 hover:bg-red-700 disabled:bg-red-400 flex w-full items-center justify-center rounded-xs px-9 py-4 text-base font-medium text-white duration-300"
+                  >
+                    {isGoogleLoading ? "Signing in..." : "Sign in with Google"}
+                  </button>
+                </div>
                 <p className="text-body-color text-center text-base font-medium">
                   Don't you have an account?{" "}
                   <Link href="/signup" className="text-primary hover:underline">
