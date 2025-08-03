@@ -6,9 +6,9 @@ const sessionEvents: Record<string, string[]> = {};
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const sessionId = params.id;
+  const { id: sessionId } = await params;
   if (!sessionId) {
     return new Response("Session ID required", { status: 400 });
   }
@@ -40,7 +40,7 @@ export async function GET(
 }
 
 // Helper to push events (call this from other endpoints after key actions)
-export function pushSessionEvent(sessionId: string, event: string) {
+function pushSessionEvent(sessionId: string, event: string) {
   if (!sessionEvents[sessionId]) sessionEvents[sessionId] = [];
   sessionEvents[sessionId].push(event);
 }

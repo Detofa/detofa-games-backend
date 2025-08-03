@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/api/utils/prisma";
 import { isAdmin } from "@/app/api/utils/authHelper";
 
-// DELETE /api/notifications/[id]/admin - Delete a notification completely from the system (admin only)
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// DELETE /api/notifications/[id]/admin - Delete a notification completely from the system (admin only) - ID in body
+export async function DELETE(req: NextRequest) {
   try {
     // Check if user is admin
     const userIsAdmin = isAdmin(req);
@@ -18,7 +15,17 @@ export async function DELETE(
       );
     }
 
-    const notificationId = params.id;
+    // Parse request body
+    const body = await req.json();
+    const { id: notificationId } = body;
+
+    // Validate required fields
+    if (!notificationId) {
+      return NextResponse.json(
+        { error: "Notification ID is required" },
+        { status: 400 }
+      );
+    }
 
     // Check if the notification exists
     const notification = await prisma.notification.findUnique({

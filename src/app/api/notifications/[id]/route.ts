@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/api/utils/prisma";
 import { getUserIdFromRequest } from "@/app/lib/auth";
 
-// PUT /api/notifications/[id] - Update a notification (mark as read, etc.)
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// PUT /api/notifications/[id] - Update a notification (mark as read, etc.) - ID in body
+export async function PUT(req: NextRequest) {
   try {
     const userId = getUserIdFromRequest(req);
 
@@ -26,7 +23,17 @@ export async function PUT(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const notificationId = params.id;
+    // Parse request body
+    const body = await req.json();
+    const { id: notificationId, isRead } = body;
+
+    // Validate required fields
+    if (!notificationId) {
+      return NextResponse.json(
+        { error: "Notification ID is required" },
+        { status: 400 }
+      );
+    }
 
     // Check if the notification exists and belongs to the user
     const userNotification = await prisma.userNotification.findUnique({
@@ -47,10 +54,6 @@ export async function PUT(
         { status: 404 }
       );
     }
-
-    // Parse request body
-    const body = await req.json();
-    const { isRead } = body;
 
     // Update the user notification
     const updatedUserNotification = await prisma.userNotification.update({
@@ -90,11 +93,8 @@ export async function PUT(
   }
 }
 
-// DELETE /api/notifications/[id] - Delete a notification for the user
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// DELETE /api/notifications/[id] - Delete a notification for the user - ID in body
+export async function DELETE(req: NextRequest) {
   try {
     const userId = getUserIdFromRequest(req);
 
@@ -114,7 +114,17 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const notificationId = params.id;
+    // Parse request body
+    const body = await req.json();
+    const { id: notificationId } = body;
+
+    // Validate required fields
+    if (!notificationId) {
+      return NextResponse.json(
+        { error: "Notification ID is required" },
+        { status: 400 }
+      );
+    }
 
     // Check if the notification exists and belongs to the user
     const userNotification = await prisma.userNotification.findUnique({

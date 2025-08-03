@@ -3,9 +3,9 @@ import prisma from "@/app/lib/prisma.config";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const sessionId = params.id;
+  const { id: sessionId } = await params;
   if (!sessionId) {
     return NextResponse.json(
       { error: "Session ID is required" },
@@ -16,7 +16,7 @@ export async function GET(
     // Get all players
     const players = await prisma.mathAdditionSessionPlayer.findMany({
       where: { sessionId },
-      include: { user: { select: { username: true } } },
+      include: { user: { select: { name: true } } },
     });
     // Get latest guesses for this session
     const guesses = await prisma.mathAdditionGuess.findMany({
@@ -34,7 +34,7 @@ export async function GET(
       const guess = latestGuessByUser.get(p.userId);
       return {
         userId: p.userId,
-        username: p.user?.username ?? null,
+        username: p.user?.name ?? null,
         guess: guess?.guessValue ?? null,
         distance: guess?.distanceFromCorrectAnswer ?? null,
         eliminated: p.eliminated,
