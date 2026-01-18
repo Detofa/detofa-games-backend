@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     // Validation des champs obligatoires
     const errors = [];
     if (!name) errors.push("Name is required");
-    if (!email) errors.push("Email is required");
     if (!phone) errors.push("Phone number is required");
     if (!password) errors.push("Password is required");
 
@@ -17,13 +16,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ errors }, { status: 400 });
     }
 
-    // Vérification du format d'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email format" },
-        { status: 400 }
-      );
+    // Vérification du format d'email si fourni
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: "Invalid email format" },
+          { status: 400 }
+        );
+      }
     }
 
     // Vérification si l'utilisateur existe déjà par numéro de téléphone
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         phone,
-        email,
+        email: email || null,
         password: hashedPassword,
         parent: parent || undefined,
       },

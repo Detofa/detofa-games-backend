@@ -1,8 +1,7 @@
 // app/lib/auth.ts
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
+import { JWT_SECRET } from "@/app/api/utils/authConfig";
 
 export function getUserIdFromRequest(req: NextRequest): string | null {
   const authHeader = req.headers.get("authorization");

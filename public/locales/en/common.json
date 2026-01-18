@@ -1,0 +1,17 @@
+{
+  "home": "Home",
+  "about": "About",
+  "blog": "Blog",
+  "support": "Support",
+  "detofaApp": "Detofa App",
+  "pages": "Pages",
+  "aboutPage": "About Page",
+  "contactPage": "Contact Page",
+  "signInPage": "Sign In Page",
+  "signUpPage": "Sign Up Page",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "account": "Account",
+  "dashboard": "Dashboard",
+  "logout": "Logout"
+}

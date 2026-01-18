@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "./src/app/api/utils/authConfig";
 
 export async function middleware(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -17,7 +18,7 @@ export async function middleware(request: Request) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decoded = jwt.verify(token, JWT_SECRET);
     (request as any).user = decoded;
     return (request as any).user;
   } catch (error) {

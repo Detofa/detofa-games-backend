@@ -35,9 +35,23 @@ enum UserStatus {
   FLAPPYBIRDADMIN
 }
 
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  MOBILE_MONEY
+  CARD
+  CASH
+  WALLET
+}
+
 model User {
   id                   String                      @id @default(cuid())
-  email                String                      @unique
+  email                String?                     @unique
   password             String?
   name                 String?
   phone                String?                     @unique
@@ -66,6 +80,8 @@ model User {
   totalScore           Int                         @default(0)
   MathAdditionSession  MathAdditionSession[]
   notifications        UserNotification[]
+  payments             Payment[]
+  boughtTickets        BoughtTicket[]
 }
 
 model Transaction {
@@ -378,4 +394,132 @@ model UserNotification {
   updated    DateTime @updatedAt
 
   @@unique([userId, notificationId]) // Prevent duplicate notifications
+}
+
+enum AppPlatform {
+  IOS
+  ANDROID
+  WEB
+}
+
+enum AppStatus {
+  ACTIVE
+  INACTIVE
+  BETA
+}
+
+model App {
+  id             String      @id @default(cuid())
+  name           String
+  platform       AppPlatform
+  version        String
+  description    String?
+  fileUrl        String? // URL to APK/IPA/AAB file (stored in Cloudinary or similar) - now optional
+  variants       Json? // Array of variant objects for dynamic delivery (e.g., [{"architecture": "arm64-v8a", "fileUrl": "...", "size": "20 MB"}])
+  iconUrl        String? // App icon URL
+  previewImages  Json? // Array of preview image URLs (like app store screenshots)
+  downloadCount  Int         @default(0) // Total download count
+  status         AppStatus   @default(ACTIVE)
+  size           String? // File size (e.g., "25.5 MB")
+  minVersion     String? // Minimum OS version required (e.g., "iOS 13.0", "Android 8.0")
+  releaseNotes   String? // Release notes for this version
+  completedSteps Json? // Track which steps are completed: {"step1": true, "step2": false, "step3": false}
+  isComplete     Boolean     @default(false) // Whether all steps are completed
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([platform, status])
+  @@index([createdAt])
+  @@index([isComplete])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+
+  amount        Float         // Amount paid in CDF
+  currency      String        @default("CDF")
+
+  method        PaymentMethod
+  status        PaymentStatus @default(PENDING)
+
+  reference     String?       // External payment reference (Mobile Money, Stripe, etc.)
+  provider      String?       // e.g. "Airtel Money", "M-Pesa", "Orange Money"
+
+  email         String?       // Payer email (optional but useful)
+
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  boughtTickets BoughtTicket[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+enum TicketPurchaseStatus {
+  PENDING
+  PAID
+  CANCELLED
+  USED
+}
+
+enum TicketStatus {
+  ACTIVE
+  INACTIVE
+  SOLD_OUT
+}
+
+model Ticket {
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+
+  price         Float
+  currency      String        @default("CDF")
+
+  totalQuantity Int
+  soldQuantity  Int           @default(0)
+
+  eventDate     DateTime?
+  location      String?
+
+  status        TicketStatus  @default(ACTIVE)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  purchases     BoughtTicket[]
+}
+
+model BoughtTicket {
+  id          String                @id @default(cuid())
+
+  user        User?                 @relation(fields: [userId], references: [id])
+  userId      String?
+
+  email       String                // Mandatory for ticket delivery
+
+  ticket      Ticket                @relation(fields: [ticketId], references: [id])
+  ticketId    String
+
+  quantity    Int                   @default(1)
+  totalPrice  Float                 // Stored in CDF
+
+  status      TicketPurchaseStatus  @default(PENDING)
+
+  qrCode      String?               // Unique ticket QR value
+  usedAt      DateTime?
+
+  payment     Payment?              @relation(fields: [paymentId], references: [id])
+  paymentId   String?
+
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([email])
+  @@index([ticketId])
+  @@index([paymentId])
 }

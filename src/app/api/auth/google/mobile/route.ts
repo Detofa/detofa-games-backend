@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma.config";
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
+import { JWT_SECRET } from "@/app/api/utils/authConfig";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 // Validate required environment variables

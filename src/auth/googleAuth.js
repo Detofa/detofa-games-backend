@@ -69,12 +69,12 @@ export const googleCallback = (req, res, next) => {
     if (err || !user) {
       return res.status(401).json({ message: "Authentication failed" });
     }
-    // Generate JWT token
+    // Generate JWT token with userId and status (consistent with other auth routes)
     const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
+      { userId: user.id, status: user.status || "USER" },
+      process.env.JWT_SECRET || process.env.NEXT_PUBLIC_JWT_SECRET || "your-secret-key",
       {
-        expiresIn: "1d",
+        expiresIn: "7200h", // Consistent with other auth routes
       }
     );
     // Send token to client or redirect as needed

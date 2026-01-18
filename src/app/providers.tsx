@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
+import { appWithTranslation } from "next-i18next";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface UserContextType {

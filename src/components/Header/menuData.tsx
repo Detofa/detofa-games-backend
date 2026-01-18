@@ -3,42 +3,48 @@ import { Menu } from "@/types/menu";
 const menuData: Menu[] = [
   {
     id: 1,
-    title: "Home",
+    titleKey: "home",
     path: "/",
     newTab: false,
   },
   {
     id: 2,
-    title: "About",
+    titleKey: "about",
     path: "/about",
     newTab: false,
   },
   {
     id: 33,
-    title: "Blog",
+    titleKey: "blog",
     path: "/blog",
     newTab: false,
   },
   {
     id: 3,
-    title: "Support",
+    titleKey: "support",
     path: "/contact",
     newTab: false,
   },
   {
+    id: 5,
+    titleKey: "detofaApp",
+    path: "/download-apps",
+    newTab: false,
+  },
+  {
     id: 4,
-    title: "Pages",
+    titleKey: "pages",
     newTab: false,
     submenu: [
       {
         id: 41,
-        title: "About Page",
+        titleKey: "aboutPage",
         path: "/about",
         newTab: false,
       },
       {
         id: 42,
-        title: "Contact Page",
+        titleKey: "contactPage",
         path: "/contact",
         newTab: false,
       },
@@ -62,13 +68,13 @@ const menuData: Menu[] = [
       // },
       {
         id: 46,
-        title: "Sign In Page",
+        titleKey: "signInPage",
         path: "/signin",
         newTab: false,
       },
       {
         id: 47,
-        title: "Sign Up Page",
+        titleKey: "signUpPage",
         path: "/signup",
         newTab: false,
       },

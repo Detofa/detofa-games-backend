@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+import { JWT_SECRET } from "./authConfig";
 
 export const getUserIdFromToken = (token) => {
   if (!token) {
