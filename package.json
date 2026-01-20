@@ -7,8 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
-    "build": "next build",
-    "postinstall": "npx prisma migrate deploy"
+    "build": "next build"
   },
   "keywords": [],
   "author": "",
